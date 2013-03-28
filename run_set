@@ -1,0 +1,63 @@
+#!/bin/bash
+#
+# run_set
+#
+# Author: Zex
+#
+
+progs="oneset twoset"
+logs="oneset.log twoset.log"
+echo "clean up old log files"
+
+rm -f $logs
+
+total=57699
+debug=1
+
+[ ! -z $debug ] && echo "ENTER DEBUG MODE"
+
+function run_prog
+{
+  if [ -e $1 ] ;then
+		echo "running oneset::::::args[$total]::::::::"
+		time ./$1 $total $debug
+	else
+		echo "Nothing to run, make first"
+		exit 0
+	fi
+	echo
+}
+
+function display_debuginfo
+{
+	l1=`wc -l $1.log|cut -f1 -d\ `
+	l2=`wc -l $1.rest.log|cut -f1 -d\ `
+	echo "[[[[[[[[[[[[[$1]]]]]]]]]]]]]"
+	echo "Total threads: "$total
+	echo "All logs: "$(($l1+$l2))
+	echo
+}
+
+function analyse_log()
+{
+	if [ -f oneset.log ] || [ -f twoset.log ] ;then
+		echo "logged messages"
+		wc -l $logs
+
+		if [ ! -z $debug ] ;then
+			for prog in $progs ;do
+				display_debuginfo $prog
+			done
+		fi
+
+	else
+		echo "oneset and twoset don't work well"
+		exit 0
+	fi
+}
+
+for prog in $progs ;do
+	run_prog $prog
+done
+
+analyse_log
